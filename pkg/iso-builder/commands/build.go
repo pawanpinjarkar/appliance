@@ -158,8 +158,9 @@ func (b *Builder) applyLiveISOBuilderAsset(ctx context.Context, isoBuilderConfig
 			Config: b.convertToApplianceConfig(isoBuilderConfig),
 		},
 		&config.EnvConfig{
-			AssetsDir: b.workingDir,
-			IsLiveISO: true,
+			AssetsDir:     b.workingDir,
+			IsLiveISO:     true,
+			SkipIsoHybrid: true,
 		},
 		&appliance.ApplianceLiveISO{},
 	}

@@ -80,6 +80,18 @@ func (a *ApplianceLiveISO) Name() string {
 	return "Appliance live ISO"
 }
 
+// applyIsoHybrid makes the live ISO USB-bootable by adding an MBR via isohybrid.
+func applyIsoHybrid(hybrid syslinux.IsoHybrid, skip bool, liveIsoFileName string) {
+	if skip {
+		logrus.Infof("Skipping isohybrid: the ISO is El Torito bootable. "+
+			"If USB booting is required, run 'isohybrid -u %s' before writing it to a USB disk.", liveIsoFileName)
+		return
+	}
+	if err := hybrid.Convert(liveIsoFileName); err != nil {
+		logrus.Errorf("Error creating isohybrid: %s", err)
+	}
+}
+
 func (a *ApplianceLiveISO) buildLiveISO(
 	envConfig *config.EnvConfig,
 	applianceConfig *config.ApplianceConfig,
@@ -215,10 +227,7 @@ func (a *ApplianceLiveISO) buildLiveISO(
 		return err
 	}
 
-	hybrid := syslinux.NewIsoHybrid(nil)
-	if err = hybrid.Convert(liveIsoFileName); err != nil {
-		logrus.Errorf("Error creating isohybrid: %s", err)
-	}
+	applyIsoHybrid(syslinux.NewIsoHybrid(nil), envConfig.SkipIsoHybrid, liveIsoFileName)
 
 	return log.StopSpinner(spinner, nil)
 }

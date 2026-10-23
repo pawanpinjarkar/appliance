@@ -25,6 +25,11 @@ type EnvConfig struct {
 
 	IsLiveISO bool
 
+	// SkipIsoHybrid prevents the live ISO build from running isohybrid.
+	// Set by the standalone iso-builder, which must not depend on isohybrid
+	// being present on the host.
+	SkipIsoHybrid bool
+
 	DebugBootstrap    bool
 	DebugBaseIgnition bool
 }
@@ -139,7 +144,7 @@ func (e *EnvConfig) FindInAssets(filePattern string) string {
 }
 
 // FindFilesInCache returns the files from cache whose name match the given regexp.
-func (e *EnvConfig) FindFilesInCache(pattern string) (files []*asset.File, err error) {	
+func (e *EnvConfig) FindFilesInCache(pattern string) (files []*asset.File, err error) {
 	matches, err := filepath.Glob(filepath.Join(e.CacheDir, pattern))
 	if err != nil {
 		return nil, err
